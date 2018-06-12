@@ -1,7 +1,6 @@
 package connection
 
 import (
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"github.com/fstab/h2c/http2client/frames"
@@ -64,17 +63,16 @@ type writeFrameRequest struct {
 
 func Start(host string, port int, incomingFrameFilters []func(frames.Frame) frames.Frame, outgoingFrameFilters []func(frames.Frame) frames.Frame) (Connection, error) {
 	hostAndPort := fmt.Sprintf("%v:%v", host, port)
-	supportedProtocols := []string{"h2", "h2-16"} // The netty server still uses h2-16, treat it as if it was h2.
-	conn, err := tls.Dial("tcp", hostAndPort, &tls.Config{
-		InsecureSkipVerify: true,
-		NextProtos:         supportedProtocols,
-	})
+	//supportedProtocols := []string{"h2", "h2-16"} // The netty server still uses h2-16, treat it as if it was h2.
+	conn, err := net.Dial("tcp", hostAndPort);
 	if err != nil {
 		return nil, fmt.Errorf("Failed to connect to %v: %v", hostAndPort, err.Error())
 	}
+    /*
 	if !util.SliceContainsString(supportedProtocols, conn.ConnectionState().NegotiatedProtocol) {
 		return nil, fmt.Errorf("Server does not support HTTP/2 protocol.")
 	}
+    */
 	_, err = conn.Write([]byte(CLIENT_PREFACE))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to write client preface to %v: %v", hostAndPort, err.Error())

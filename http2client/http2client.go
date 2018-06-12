@@ -50,7 +50,7 @@ func (h2c *Http2Client) Connect(scheme string, host string, port int) (string, e
 	if h2c.err != nil {
 		return "", h2c.err
 	}
-	if scheme != "https" {
+	if scheme != "http" {
 		return "", fmt.Errorf("%v connections not supported.", scheme)
 	}
 	if h2c.loop != nil && !h2c.loop.IsTerminated() {
@@ -98,7 +98,7 @@ func (h2c *Http2Client) putOrPostOrGet(method string, path string, data []byte, 
 		return "", err
 	}
 	if !h2c.isConnected() {
-		scheme := "https"
+		scheme := "http"
 		if url.Scheme != "" {
 			scheme = url.Scheme
 		}
@@ -112,7 +112,7 @@ func (h2c *Http2Client) putOrPostOrGet(method string, path string, data []byte, 
 		}
 	}
 	if !h2c.urlMatchesCurrentConnection(url) {
-		return "", fmt.Errorf("Cannot query %v while connected to %v", url.Scheme+"://"+url.Host, "https://"+hostAndPortString(h2c.loop.Host, h2c.loop.Port))
+		return "", fmt.Errorf("Cannot query %v while connected to %v", url.Scheme+"://"+url.Host, "http://"+hostAndPortString(h2c.loop.Host, h2c.loop.Port))
 	}
 	cmd := commands.NewHttpCommand(method, url)
 	for _, header := range h2c.customHeaders {
@@ -150,7 +150,7 @@ func (h2c *Http2Client) completeUrlWithCurrentConnectionData(path string) (*netu
 		return url, nil
 	}
 	if url.Scheme == "" {
-		url.Scheme = "https"
+		url.Scheme = "http"
 	}
 	if url.Host == "" {
 		url.Host = hostAndPortString(h2c.loop.Host, h2c.loop.Port)
@@ -163,7 +163,7 @@ func (h2c *Http2Client) urlMatchesCurrentConnection(url *neturl.URL) bool {
 		return false
 	}
 	host, port := hostAndPort(url)
-	return url.Scheme == "https" && host == h2c.loop.Host && port == h2c.loop.Port
+	return url.Scheme == "http" && host == h2c.loop.Host && port == h2c.loop.Port
 }
 
 func hostAndPort(url *neturl.URL) (string, int) {

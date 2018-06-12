@@ -248,17 +248,11 @@ func receiveClientPreface(tlsConn *tls.Conn) error {
 	return nil
 }
 
-func connectToServer(hostAndPort string) (*tls.Conn, error) {
+func connectToServer(hostAndPort string) (net.Conn, error) {
 	dialerWithTimeout := &net.Dialer{Timeout: 5 * time.Second}
-	tlsConn, err := tls.DialWithDialer(dialerWithTimeout, "tcp", hostAndPort, &tls.Config{
-		InsecureSkipVerify: true,
-		NextProtos:         []string{"h2"},
-	})
+	tlsConn, err := dialerWithTimeout.Dial("tcp", hostAndPort);
 	if err != nil {
 		return nil, fmt.Errorf("Failed to connect to %v: %v", hostAndPort, err.Error())
-	}
-	if tlsConn.ConnectionState().NegotiatedProtocol != "h2" {
-		return nil, fmt.Errorf("Server does not support HTTP/2 protocol.")
 	}
 	_, err = tlsConn.Write([]byte(CLIENT_PREFACE))
 	if err != nil {
