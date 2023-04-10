@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/fstab/h2c/cli"
 	"os"
+
+	"github.com/fstab/h2c/cli"
 )
 
 func main() {

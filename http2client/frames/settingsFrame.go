@@ -16,6 +16,7 @@ const (
 	SETTINGS_INITIAL_WINDOW_SIZE    Setting = 0x04
 	SETTINGS_MAX_FRAME_SIZE         Setting = 0x05
 	SETTINGS_MAX_HEADER_LIST_SIZE   Setting = 0x06
+	SETTINGS_UNKNOWN                Setting = 0x07
 )
 
 const (
@@ -36,9 +37,11 @@ func (s Setting) String() string {
 		return "SETTINGS_MAX_FRAME_SIZE"
 	case SETTINGS_MAX_HEADER_LIST_SIZE:
 		return "SETTINGS_MAX_HEADER_LIST_SIZE"
+	case SETTINGS_UNKNOWN:
+		return "SETTINGS_UNKNOWN"
 	default:
 		fmt.Fprintf(os.Stderr, "ERROR: Unknown setting %v", s)
-		os.Exit(-1)
+		//os.Exit(-1)
 		return ""
 	}
 }
@@ -77,7 +80,8 @@ func DecodeSettingsFrame(flags byte, streamId uint32, payload []byte, context *D
 		setting := Setting(binary.BigEndian.Uint16(payload[i : i+2]))
 		value := binary.BigEndian.Uint32(payload[i+2 : i+6])
 		if isUnknownSetting(setting) {
-			return nil, fmt.Errorf("Unknown setting in SETTINGS frame.")
+			fmt.Printf("Unknown setting in SETTINGS frame.")
+			continue
 		}
 		result.Settings[setting] = value
 	}
@@ -90,7 +94,8 @@ func isUnknownSetting(setting Setting) bool {
 		setting != SETTINGS_MAX_CONCURRENT_STREAMS &&
 		setting != SETTINGS_INITIAL_WINDOW_SIZE &&
 		setting != SETTINGS_MAX_FRAME_SIZE &&
-		setting != SETTINGS_MAX_HEADER_LIST_SIZE
+		setting != SETTINGS_MAX_HEADER_LIST_SIZE &&
+		setting != SETTINGS_UNKNOWN
 }
 
 func (f *SettingsFrame) Type() Type {

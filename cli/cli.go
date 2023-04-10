@@ -5,6 +5,12 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"regexp"
+	"strings"
+
 	"github.com/fstab/h2c/cli/cmdline"
 	"github.com/fstab/h2c/cli/daemon"
 	"github.com/fstab/h2c/cli/rpc"
@@ -12,11 +18,6 @@ import (
 	"github.com/fstab/h2c/cli/wiretap"
 	"github.com/fstab/h2c/http2client"
 	"github.com/fstab/h2c/http2client/frames"
-	"io"
-	"io/ioutil"
-	"os"
-	"regexp"
-	"strings"
 )
 
 // Run executes the command, as provided in os.Args.
@@ -46,7 +47,7 @@ func Run() (string, error) {
 			if cmdline.STOP_COMMAND.Name() == cmd.Name {
 				return "", fmt.Errorf("h2c is not running.")
 			} else {
-				fmt.Fprintf(os.Stderr, "h2c is not running. Starting h2c as a background process.\n")
+				fmt.Fprintf(os.Stderr, "h2ccc is not running. Starting h2c as a background process.\n")
 				err = runDaemonShellCommand()
 				if err != nil {
 					return "", fmt.Errorf("Failed. In order to start the background process manually, run '%v'.", cmdline.StartCmd)
